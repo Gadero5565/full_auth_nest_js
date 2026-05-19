@@ -1,98 +1,346 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# NestJS JWT Auth API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A simple authentication and authorization API built with **NestJS**, **PostgreSQL**, **TypeORM**, **Passport JWT**, and **Role-Based Access Control (RBAC)**.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+The application supports user registration, login with JWT access tokens, protected profile access, user listing for managers/admins, and role updates for admins.
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Features
 
-## Project setup
+- User registration
+- User login with JWT token generation
+- Password hashing using bcrypt
+- JWT authentication using Passport
+- Protected routes with `JwtAuthGuard`
+- Role-based access control using `RolesGuard`
+- Supported roles:
+  - `user`
+  - `manager`
+  - `admin`
+- Admin user seeding on application startup
+- PostgreSQL database integration with TypeORM
+- DTO validation using `class-validator`
+- Global validation pipe
+- CORS enabled
 
-```bash
-$ npm install
+---
+
+## Tech Stack
+
+- [NestJS](https://nestjs.com/)
+- [TypeORM](https://typeorm.io/)
+- [PostgreSQL](https://www.postgresql.org/)
+- [Passport JWT](https://www.passportjs.org/packages/passport-jwt/)
+- [bcrypt](https://www.npmjs.com/package/bcrypt)
+- [class-validator](https://www.npmjs.com/package/class-validator)
+- [@nestjs/config](https://docs.nestjs.com/techniques/configuration)
+
+---
+
+## Project Structure
+
+```text
+src/
+├── auth/
+│   ├── dtos/
+│   │   ├── login.dto.ts
+│   │   ├── register.dto.ts
+│   │   ├── update-role.dto.ts
+│   │   └── users.dto.ts
+│   ├── auth.controller.ts
+│   ├── auth.module.ts
+│   ├── auth.service.ts
+│   ├── jwt-auth.guard.ts
+│   ├── jwt.strategy.ts
+│   ├── roles.decorator.ts
+│   ├── roles.guard.ts
+│   └── user.entity.ts
+├── seeding/
+│   └── user.seeder.ts
+├── app.module.ts
+└── main.ts
 ```
 
-## Compile and run the project
+---
 
-```bash
-# development
-$ npm run start
+## Environment Variables
 
-# watch mode
-$ npm run start:dev
+Create a `.env` file in the project root.
 
-# production mode
-$ npm run start:prod
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=auth_db
+
+JWT_SECRET=replace_with_a_strong_secret
+JWT_EXPIRES_IN=3600s
 ```
 
-## Run tests
+You can also copy the provided example file:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+cp .env.example .env
 ```
 
-## Deployment
+> Do not commit your real `.env` file to GitHub.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+---
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Installation
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm install
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+## Database Setup
 
-Check out a few resources that may come in handy when working with NestJS:
+Make sure PostgreSQL is running and create a database named:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```text
+auth_db
+```
 
-## Support
+Example using PostgreSQL CLI:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+createdb auth_db
+```
 
-## Stay in touch
+Or using Docker:
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+docker run --name auth-postgres \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=auth_db \
+  -p 5432:5432 \
+  -d postgres
+```
+
+---
+
+## Running the Application
+
+### Development
+
+```bash
+npm run start:dev
+```
+
+### Production
+
+```bash
+npm run build
+npm run start:prod
+```
+
+The API will run on:
+
+```text
+http://localhost:3000
+```
+
+---
+
+## Default Admin User
+
+When the application starts, it checks if an admin user already exists.
+
+If no admin exists, it creates one:
+
+```text
+Username: admin
+Email: admin@example.com
+Password: admin123
+Role: admin
+```
+
+> This account is useful for development only. Change the default credentials before using the app in production.
+
+---
+
+## API Endpoints
+
+### Register User
+
+```http
+POST /auth/register
+```
+
+Request body:
+
+```json
+{
+  "username": "john",
+  "email": "john@example.com",
+  "password": "password123"
+}
+```
+
+Response:
+
+```json
+{
+  "message": "User registered successfully"
+}
+```
+
+---
+
+### Login
+
+```http
+POST /auth/login
+```
+
+Request body:
+
+```json
+{
+  "username": "john",
+  "password": "password123"
+}
+```
+
+Response:
+
+```json
+{
+  "accessToken": "jwt_token_here"
+}
+```
+
+Use the returned token in protected routes:
+
+```http
+Authorization: Bearer jwt_token_here
+```
+
+---
+
+### Get Profile
+
+```http
+GET /auth/profile
+```
+
+Access: authenticated users
+
+Headers:
+
+```http
+Authorization: Bearer jwt_token_here
+```
+
+Response:
+
+```json
+{
+  "id": 1,
+  "username": "john",
+  "email": "john@example.com",
+  "role": "user"
+}
+```
+
+---
+
+### Get All Users
+
+```http
+GET /auth/users
+```
+
+Access: `manager`, `admin`
+
+Headers:
+
+```http
+Authorization: Bearer jwt_token_here
+```
+
+Response:
+
+```json
+[
+  {
+    "id": 1,
+    "username": "john",
+    "email": "john@example.com"
+  }
+]
+```
+
+---
+
+### Update User Role
+
+```http
+PATCH /auth/users/role
+```
+
+Access: `admin`
+
+Headers:
+
+```http
+Authorization: Bearer jwt_token_here
+```
+
+Request body:
+
+```json
+{
+  "userId": 1,
+  "role": "manager"
+}
+```
+
+Response:
+
+```json
+{
+  "message": "User role updated successfully",
+  "user": {
+    "id": 1,
+    "username": "john",
+    "role": "manager"
+  }
+}
+```
+
+---
+
+## Roles and Permissions
+
+| Endpoint | User | Manager | Admin |
+|---|---:|---:|---:|
+| `POST /auth/register` | ✅ | ✅ | ✅ |
+| `POST /auth/login` | ✅ | ✅ | ✅ |
+| `GET /auth/profile` | ✅ | ✅ | ✅ |
+| `GET /auth/users` | ❌ | ✅ | ✅ |
+| `PATCH /auth/users/role` | ❌ | ❌ | ✅ |
+
+---
+
+## Authentication Flow
+
+1. A user registers using `/auth/register`.
+2. The password is hashed before being stored in the database.
+3. The user logs in using `/auth/login`.
+4. The server validates the username and password.
+5. The server returns a JWT access token.
+6. The client sends the token in the `Authorization` header.
+7. Protected routes validate the token using `JwtAuthGuard`.
+8. Role-protected routes also check the user role using `RolesGuard`.
+
+---
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is open-source and available under the MIT License.
